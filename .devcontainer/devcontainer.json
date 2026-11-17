@@ -1,0 +1,51 @@
+{
+  "name": "boardI",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+
+  // Fixed path so the image can pre-create node_modules with the right owner.
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "workspaceFolder": "/workspace",
+
+  // node_modules lives in a volume, never on the host. Dependency code can't
+  // be run by host tooling by accident, and installs are faster on macOS.
+  "mounts": [
+    "source=boardi-node_modules-${devcontainerId},target=/workspace/node_modules,type=volume"
+  ],
+
+  // Run as the unprivileged `node` user, with no Linux capabilities and no way
+  // to gain privileges (setuid binaries, sudo). Installs happen in here, so a
+  // malicious package can't reach the host's ~/.ssh, ~/.aws, keychain, etc.
+  "containerUser": "node",
+  "remoteUser": "node",
+  "init": true,
+  "runArgs": [
+    "--cap-drop=ALL",
+    "--security-opt=no-new-privileges:true"
+  ],
+
+  // VS Code forwards ports through its own tunnel, bound to 127.0.0.1 on the
+  // host. Don't add "appPort" or "-p" runArgs: those publish on 0.0.0.0.
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "Next.js", "onAutoForward": "notify" }
+  },
+  "otherPortsAttributes": { "onAutoForward": "ignore" },
+
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint"
+      ],
+      "settings": {
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "npm.packageManager": "pnpm",
+        "eslint.useFlatConfig": true
+      }
+    }
+  }
+}

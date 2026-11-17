@@ -1,0 +1,37 @@
+# Supply-chain hardening. Reference: https://pnpm.io/settings
+
+# Don't resolve versions published in the last 3 days. Most malicious
+# releases are caught and unpublished well within this window.
+minimumReleaseAge: 4320
+
+# Fail if a package's publish provenance gets weaker than in earlier releases
+# (e.g. a version suddenly published without trusted publishing/provenance,
+# which is what a stolen npm token looks like).
+trustPolicy: no-downgrade
+
+# Transitive dependencies may only come from the registry, never from git
+# URLs or tarballs.
+blockExoticSubdeps: true
+
+# Dependency install scripts are denied unless listed below; an unreviewed
+# script fails the install instead of being silently skipped.
+strictDepBuilds: true
+allowBuilds:
+  # Both ship prebuilt platform binaries as optional deps; their install
+  # scripts are only a fallback, so they stay denied.
+  sharp: false
+  unrs-resolver: false
+
+# These plugins (pulled in by eslint-config-next) haven't widened their peer
+# range to ESLint 10 yet. Verified working; ESLint 9 is out of support.
+peerDependencyRules:
+  allowedVersions:
+    eslint-plugin-import>eslint: '10'
+    eslint-plugin-jsx-a11y>eslint: '10'
+    eslint-plugin-react>eslint: '10'
+
+engineStrict: true
+verifyStoreIntegrity: true
+
+# `pnpm add` writes exact versions; the lockfile is the source of truth.
+savePrefix: ''
