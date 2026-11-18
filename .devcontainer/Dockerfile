@@ -9,6 +9,8 @@ ARG PNPM_VERSION=12.21.0
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
+        chromium \
+        fonts-liberation \
         git \
         less \
         openssh-client \

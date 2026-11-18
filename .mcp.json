@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "pnpm",
+      "args": [
+        "exec",
+        "playwright-mcp",
+        "--config",
+        ".devcontainer/playwright-mcp.json"
+      ]
+    }
+  }
+}

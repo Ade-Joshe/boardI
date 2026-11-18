@@ -31,6 +31,15 @@ Git hooks install with `pnpm install`:
 - **commit-msg:** checks the Conventional Commits format
 - **pre-push:** blocks pushes to `main`, then runs the CI checks
 
+## Browser testing (development)
+
+The dev container includes headless Chromium and a [Playwright MCP](https://github.com/microsoft/playwright-mcp) server (`.mcp.json`), so Claude can open the app, read the console and network, and take screenshots.
+
+1. Approve the `playwright` MCP server the first time Claude Code asks.
+2. Run `pnpm dev`, then ask Claude to check a page, e.g. "open / and report console errors".
+
+Screenshots are saved to the git-ignored `.playwright-mcp/` folder. The browser may only load `http://localhost:3000`. See the [security model](docs/security-model.md#ai-agents) for the trade-offs.
+
 ## Production image
 
 ```sh

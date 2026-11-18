@@ -8,6 +8,7 @@ paths:
   - ".devcontainer/**"
   - ".github/**"
   - ".husky/**"
+  - ".mcp.json"
 ---
 
 # Security config
@@ -22,4 +23,5 @@ Never weaken any of this; stop and ask instead. The reasons are in `docs/securit
   - Keep `permissions` read-only, widening per job only when needed.
   - Pass `${{ }}` values to `run:` via `env:`, never inline. [CodeQL, review]
 - Dev container: no added capabilities, `sudo`, `-p`/`appPort` or host mounts. [review]
+- Agent browser (`.mcp.json`, `.devcontainer/playwright-mcp.json`): headless, isolated profile, `allowedOrigins` limited to the local app, no `core-install`; `browser_run_code_unsafe` stays denied. [review]
 - Production image: distroless `nonroot`, pinned by digest, with read-only app files. [review]

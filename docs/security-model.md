@@ -37,6 +37,12 @@ Assume the agent will eventually read something hostile. The layers below aim to
 - **Instructions.** [AGENTS.md](../AGENTS.md) holds repo-wide rules and is always loaded. [docs/standards/](standards/README.md) holds rules by area, which Claude loads only when it touches matching files.
 - **Machine-checked invariants.** Rules that matter are enforced by tests, lint, hooks and CI, not just prose. Agents follow a failing check more reliably than a sentence, and review can't keep up with the volume of code agents produce.
 - **Hallucinated packages** ("slopsquatting"). The agent asks before adding dependencies, and `minimumReleaseAge` and `trustPolicy` reject freshly published look-alikes.
+- **Agent browser (development only).** The Playwright MCP server drives headless Chromium inside the container:
+  - The profile is in memory, so no cookies or sessions persist.
+  - It may only load `http://localhost:3000`. Playwright notes this isn't a hard boundary; egress control is the real one.
+  - Chromium's own sandbox is off because `--cap-drop=ALL` blocks it; the container is the sandbox.
+  - `browser_run_code_unsafe`, which runs code in the server process, is denied.
+  - Screenshots land in the git-ignored `.playwright-mcp/` folder.
 - **Skills are code.** Host skills are mounted read-only from `~/skills`. Only put skills there whose content you've read.
 
 ## Supply chain
