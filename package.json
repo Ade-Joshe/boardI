@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
     "audit": "pnpm audit --prod --audit-level=high",
-    "test:security": "node --test tests/"
+    "test:security": "node --test tests/",
+    "prepare": "husky"
   },
   "dependencies": {
     "next": "16.4.6",
@@ -28,6 +29,9 @@
     "@types/react-dom": "19.3.0",
     "eslint": "10.15.0",
     "eslint-config-next": "16.4.6",
+    "husky": "9.1.7",
+    "lint-staged": "17.6.0",
+    "prettier": "3.10.1",
     "typescript": "6.0.3"
   }
 }

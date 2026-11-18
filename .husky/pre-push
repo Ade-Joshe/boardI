@@ -1,0 +1,4 @@
+# Same checks as CI (.github/workflows/ci.yml).
+NEXT_TELEMETRY_DISABLED=1 pnpm build
+pnpm test:security
+pnpm audit --prod --audit-level=high
