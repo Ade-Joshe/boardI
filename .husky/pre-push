@@ -1,4 +1,14 @@
+# main changes only via PR (docs/standards/). First push of a new
+# repo: git push --no-verify -u origin main.
+while read -r _ _ remote_ref _; do
+  if [ "$remote_ref" = "refs/heads/main" ]; then
+    echo "Direct pushes to main are blocked; push a branch and open a PR." >&2
+    exit 1
+  fi
+done
+
 # Same checks as CI (.github/workflows/ci.yml).
+pnpm lint
 NEXT_TELEMETRY_DISABLED=1 pnpm build
-pnpm test:security
+pnpm test
 pnpm audit --prod --audit-level=high

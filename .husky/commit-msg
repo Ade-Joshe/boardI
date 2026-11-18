@@ -1,0 +1,7 @@
+# Conventional Commits, e.g. "feat(auth): add login" (docs/standards/).
+# Merge, revert and fixup!/squash! messages are allowed too.
+types='feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert'
+head -n1 "$1" | grep -Eq "^(($types)(\([a-z0-9-]+\))?!?: .+|Merge .+|Revert .+|(fixup|squash|amend)! .+)$" || {
+  echo "Commit message must follow Conventional Commits, e.g. 'feat(auth): add login'." >&2
+  exit 1
+}
