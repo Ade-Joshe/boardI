@@ -34,7 +34,11 @@
       "Edit(./.github/**)",
       "Edit(./.claude/**)",
       "Edit(./AGENTS.md)",
-      "Edit(./CLAUDE.md)"
+      "Edit(./CLAUDE.md)",
+      "Edit(./.husky/**)",
+      "Edit(./docs/standards/**)",
+      "Edit(./docs/security-model.md)",
+      "Edit(./SECURITY.md)"
     ]
   }
 }
