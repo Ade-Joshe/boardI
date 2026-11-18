@@ -16,7 +16,7 @@ export default defineConfig([
       // then disable per line with a reason.
       "react/no-danger": "error",
       "react/jsx-no-target-blank": ["error", { allowReferrer: false }],
-      // Production CSP blocks inline style attributes; use CSS modules.
+      // Production CSP blocks inline style attributes; use Tailwind classes.
       "react/forbid-dom-props": [
         "error",
         {
@@ -24,7 +24,7 @@ export default defineConfig([
             {
               propName: "style",
               message:
-                "Prod CSP blocks inline styles (dev allows them). Use a CSS Module class.",
+                "Prod CSP blocks inline styles (dev allows them). Use a Tailwind class.",
             },
           ],
         },
