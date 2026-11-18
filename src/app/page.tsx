@@ -1,12 +1,17 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 
+// next/image adds an inline style the production CSP blocks. An empty
+// value renders none ("" not undefined, which gets dropped).
+const noInlineStyle = { color: "" };
+
 export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
         <Image
           className={styles.logo}
+          style={noInlineStyle}
           src="/next.svg"
           alt="Next.js logo"
           width={100}
@@ -47,6 +52,7 @@ export default function Home() {
           >
             <Image
               className={styles.logo}
+              style={noInlineStyle}
               src="/vercel.svg"
               alt="Vercel logomark"
               width={16}

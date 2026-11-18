@@ -24,8 +24,14 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   await connection();
 
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+    // Browser extensions add attributes to <html>/<body> before hydration.
+    // This ignores only those two tags; deeper mismatches still surface.
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }
