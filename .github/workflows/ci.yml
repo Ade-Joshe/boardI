@@ -36,8 +36,8 @@ jobs:
       - run: pnpm build
         env:
           NEXT_TELEMETRY_DISABLED: "1"
-      # CSP and header checks against the real server.
-      - run: pnpm test:security
+      # Conventions, plus CSP and header checks on the real server.
+      - run: pnpm test
       # Runtime deps only; dev-tool advisories still show in
       # dependency-review and Dependabot alerts.
       - run: pnpm audit --prod --audit-level=high

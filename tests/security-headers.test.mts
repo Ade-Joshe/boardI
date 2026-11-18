@@ -14,7 +14,9 @@ function freePort(): Promise<number> {
   return new Promise((resolve, reject) => {
     const s = createServer().listen(0, "127.0.0.1", () => {
       const addr = s.address();
-      s.close(() => (typeof addr === "object" && addr ? resolve(addr.port) : reject()));
+      s.close(() =>
+        typeof addr === "object" && addr ? resolve(addr.port) : reject()
+      );
     });
   });
 }
@@ -37,8 +39,7 @@ function directives(csp: string): Map<string, string[]> {
     csp
       .split(";")
       .map((d) => d.trim().split(/\s+/))
-      .filter((parts) => parts[0])
-      .map(([name, ...values]) => [name!, values]),
+      .flatMap(([name, ...values]) => (name ? [[name, values] as const] : []))
   );
 }
 
@@ -47,7 +48,12 @@ before(async () => {
   const port = await freePort();
   base = `http://127.0.0.1:${port}`;
   server = spawn(process.execPath, [SERVER], {
-    env: { ...process.env, NODE_ENV: "production", PORT: String(port), HOSTNAME: "127.0.0.1" },
+    env: {
+      ...process.env,
+      NODE_ENV: "production",
+      PORT: String(port),
+      HOSTNAME: "127.0.0.1",
+    },
     stdio: "ignore",
   });
   await waitUntilUp(`${base}/api/health`);
@@ -65,10 +71,22 @@ describe("pages", () => {
     const d = directives(csp);
 
     const script = d.get("script-src") ?? [];
-    assert.ok(script.some((v) => /^'nonce-[A-Za-z0-9+/=]{16,}'$/.test(v)), "script-src needs a nonce");
+    assert.ok(
+      script.some((v) => /^'nonce-[A-Za-z0-9+/=]{16,}'$/.test(v)),
+      "script-src needs a nonce"
+    );
     assert.ok(script.includes("'strict-dynamic'"));
-    for (const unsafe of ["'unsafe-inline'", "'unsafe-eval'", "*", "https:", "data:"]) {
-      assert.ok(!script.includes(unsafe), `script-src must not allow ${unsafe}`);
+    for (const unsafe of [
+      "'unsafe-inline'",
+      "'unsafe-eval'",
+      "*",
+      "https:",
+      "data:",
+    ]) {
+      assert.ok(
+        !script.includes(unsafe),
+        `script-src must not allow ${unsafe}`
+      );
     }
     assert.ok(!(d.get("style-src") ?? []).includes("'unsafe-inline'"));
     assert.deepEqual(d.get("object-src"), ["'none'"]);
@@ -77,20 +95,29 @@ describe("pages", () => {
     // Tight img/connect sources stop rendered content (e.g. an LLM's
     // markdown image) from sending data to other servers.
     assert.deepEqual(d.get("connect-src"), ["'self'"]);
-    assert.ok((d.get("img-src") ?? []).every((v) => ["'self'", "blob:", "data:"].includes(v)));
+    assert.ok(
+      (d.get("img-src") ?? []).every((v) =>
+        ["'self'", "blob:", "data:"].includes(v)
+      )
+    );
   });
 
   it("use a fresh nonce per request, applied to the page's scripts", async () => {
     const nonceOf = async () => {
       const res = await fetch(base);
-      const nonce = /'nonce-([^']+)'/.exec(res.headers.get("content-security-policy") ?? "")?.[1];
+      const nonce = /'nonce-([^']+)'/.exec(
+        res.headers.get("content-security-policy") ?? ""
+      )?.[1];
       return { nonce, html: await res.text() };
     };
     const a = await nonceOf();
     const b = await nonceOf();
     assert.ok(a.nonce && b.nonce);
     assert.notEqual(a.nonce, b.nonce);
-    assert.ok(a.html.includes(`nonce="${a.nonce}"`), "rendered scripts must carry the nonce");
+    assert.ok(
+      a.html.includes(`nonce="${a.nonce}"`),
+      "rendered scripts must carry the nonce"
+    );
   });
 
   it("send the static hardening headers", async () => {
@@ -106,7 +133,10 @@ describe("pages", () => {
 describe("API routes", () => {
   it("are locked down and uncached", async () => {
     const res = await fetch(`${base}/api/health`);
-    assert.equal(res.headers.get("content-security-policy"), "default-src 'none'; frame-ancestors 'none'");
+    assert.equal(
+      res.headers.get("content-security-policy"),
+      "default-src 'none'; frame-ancestors 'none'"
+    );
     assert.equal(res.headers.get("cache-control"), "no-store");
     assert.deepEqual(await res.json(), { status: "ok" });
   });

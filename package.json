@@ -13,8 +13,10 @@
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
     "audit": "pnpm audit --prod --audit-level=high",
-    "test:security": "node --test tests/",
-    "prepare": "husky"
+    "test:security": "node --test tests/security-headers.test.mts",
+    "prepare": "husky",
+    "test": "node --test tests/",
+    "test:conventions": "node --test tests/conventions.test.mts"
   },
   "dependencies": {
     "next": "16.4.6",
