@@ -5,19 +5,19 @@
     "context": "."
   },
 
-  // Fixed path so the image can pre-create node_modules with the right owner.
+  // Fixed path so the image can pre-create node_modules (see Dockerfile).
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
   "workspaceFolder": "/workspace",
 
-  // node_modules lives in a volume, never on the host. Dependency code can't
-  // be run by host tooling by accident, and installs are faster on macOS.
   "mounts": [
-    "source=boardi-node_modules-${devcontainerId},target=/workspace/node_modules,type=volume"
+    // Per-container volume: dependency code never lands on the host.
+    "source=boardi-node_modules-${devcontainerId},target=/workspace/node_modules,type=volume",
+    // Skills are instructions the agent follows: treat as code, mount read-only.
+    "source=${localEnv:HOME}/skills,target=/home/node/.agents/skills,type=bind,readonly"
   ],
 
-  // Run as the unprivileged `node` user, with no Linux capabilities and no way
-  // to gain privileges (setuid binaries, sudo). Installs happen in here, so a
-  // malicious package can't reach the host's ~/.ssh, ~/.aws, keychain, etc.
+  // Unprivileged user, no capabilities, no privilege escalation.
+  // Malicious packages installed here can't reach host secrets.
   "containerUser": "node",
   "remoteUser": "node",
   "init": true,
@@ -26,8 +26,17 @@
     "--security-opt=no-new-privileges:true"
   ],
 
-  // VS Code forwards ports through its own tunnel, bound to 127.0.0.1 on the
-  // host. Don't add "appPort" or "-p" runArgs: those publish on 0.0.0.0.
+  // Hide the host's SSH agent and git credentials from code in here.
+  // Partial fix: sockets stay in /tmp, so also apply the README settings.
+  "remoteEnv": {
+    "SSH_AUTH_SOCK": "",
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "credential.helper",
+    "GIT_CONFIG_VALUE_0": ""
+  },
+
+  // VS Code forwards ports on 127.0.0.1 only.
+  // Don't add "appPort" or "-p": those expose the port on 0.0.0.0.
   "forwardPorts": [3000],
   "portsAttributes": {
     "3000": { "label": "Next.js", "onAutoForward": "notify" }
@@ -35,11 +44,14 @@
   "otherPortsAttributes": { "onAutoForward": "ignore" },
 
   "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "mkdir -p ~/.claude/skills && for d in ~/.agents/skills/*/; do [ -d \"$d\" ] && ln -sfn \"$d\" ~/.claude/skills/\"$(basename \"$d\")\"; done; true",
+  "postAttachCommand": "bash .devcontainer/check-isolation.sh",
 
   "customizations": {
     "vscode": {
       "extensions": [
-        "dbaeumer.vscode-eslint"
+        "dbaeumer.vscode-eslint",
+        "anthropic.claude-code"
       ],
       "settings": {
         "typescript.tsdk": "node_modules/typescript/lib",

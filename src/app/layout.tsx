@@ -8,9 +8,8 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // The CSP nonce only exists at request time, so every page must be rendered
-  // dynamically. A statically prerendered page would ship scripts without the
-  // nonce, and the browser would block them.
+  // The CSP nonce is per request, so pages must render dynamically.
+  // Prerendered pages would ship un-nonced scripts the browser blocks.
   await connection();
 
   return (

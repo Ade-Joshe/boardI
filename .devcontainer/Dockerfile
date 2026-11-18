@@ -1,8 +1,7 @@
 # syntax=docker/dockerfile:1
 
-# Dev image. Built from the official slim Node image rather than a "batteries
-# included" devcontainer base so there is no sudo, no passwordless root and
-# only the packages listed below. Pinned by digest; Dependabot bumps it.
+# Slim Node base: no sudo, no root login, only the packages below.
+# Pinned by digest; Dependabot keeps it current.
 FROM node:26-trixie-slim@sha256:e6bedef217677b276c591795e169840edd9096dbf13f29df8ef8d1856b8820bc
 
 ARG PNPM_VERSION=12.21.0
@@ -19,9 +18,8 @@ RUN apt-get update \
 RUN npm install -g "pnpm@${PNPM_VERSION}" \
     && npm cache clean --force
 
-# The workspace path is fixed (see workspaceMount in devcontainer.json) so that
-# node_modules can be pre-created here with the right owner. Docker copies this
-# ownership into the named volume the first time it is mounted.
+# Pre-create node_modules owned by `node`; Docker copies that
+# ownership into the volume on first mount.
 RUN mkdir -p /workspace/node_modules \
     && chown -R node:node /workspace
 

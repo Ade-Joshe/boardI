@@ -1,29 +1,26 @@
 # Supply-chain hardening. Reference: https://pnpm.io/settings
 
-# Don't resolve versions published in the last 3 days. Most malicious
-# releases are caught and unpublished well within this window.
+# Ignore versions under 3 days old; most malicious
+# releases are pulled within that window.
 minimumReleaseAge: 4320
 
-# Fail if a package's publish provenance gets weaker than in earlier releases
-# (e.g. a version suddenly published without trusted publishing/provenance,
-# which is what a stolen npm token looks like).
+# Fail if a package's publish provenance gets weaker than before
+# (typical of a stolen npm token).
 trustPolicy: no-downgrade
 
-# Transitive dependencies may only come from the registry, never from git
-# URLs or tarballs.
+# Sub-dependencies must come from the registry, not git URLs or tarballs.
 blockExoticSubdeps: true
 
-# Dependency install scripts are denied unless listed below; an unreviewed
-# script fails the install instead of being silently skipped.
+# Install scripts are denied unless listed below;
+# a new one fails the install until reviewed.
 strictDepBuilds: true
 allowBuilds:
-  # Both ship prebuilt platform binaries as optional deps; their install
-  # scripts are only a fallback, so they stay denied.
+  # Both ship prebuilt binaries; their scripts are only a fallback.
   sharp: false
   unrs-resolver: false
 
-# These plugins (pulled in by eslint-config-next) haven't widened their peer
-# range to ESLint 10 yet. Verified working; ESLint 9 is out of support.
+# These eslint-config-next plugins don't list ESLint 10 yet.
+# Verified working; ESLint 9 is out of support.
 peerDependencyRules:
   allowedVersions:
     eslint-plugin-import>eslint: '10'
@@ -33,5 +30,5 @@ peerDependencyRules:
 engineStrict: true
 verifyStoreIntegrity: true
 
-# `pnpm add` writes exact versions; the lockfile is the source of truth.
+# `pnpm add` pins exact versions.
 savePrefix: ''

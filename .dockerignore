@@ -1,4 +1,4 @@
-# Keep secrets, VCS history and local build output out of the build context.
+# Keep secrets, git history and local builds out of the image.
 .git
 .github
 .devcontainer

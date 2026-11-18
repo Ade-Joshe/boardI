@@ -1,8 +1,7 @@
 # syntax=docker/dockerfile:1
 
-# Production image: build on Debian slim, run on distroless (no shell, no
-# package manager, non-root). Both images are pinned by digest and kept on
-# the same Debian release so native modules (sharp) match glibc.
+# Build on Debian slim, run on distroless (no shell, non-root).
+# Same Debian release in both so native modules like sharp still work.
 
 FROM node:26-trixie-slim@sha256:e6bedef217677b276c591795e169840edd9096dbf13f29df8ef8d1856b8820bc AS deps
 WORKDIR /app
@@ -26,8 +25,8 @@ ENV NODE_ENV=production \
     HOSTNAME=0.0.0.0 \
     PORT=3000
 
-# App files stay root-owned, so the nonroot user can read them but not modify
-# them. Only the Next.js cache directory is writable.
+# App files are root-owned (read-only to the app).
+# Only the Next.js cache is writable.
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public

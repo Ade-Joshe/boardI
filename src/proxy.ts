@@ -1,15 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-// Per-request nonce CSP: only scripts Next.js renders with this nonce (and what
-// they load, via 'strict-dynamic') may run. Injected inline scripts are blocked.
-// See https://nextjs.org/docs/app/guides/content-security-policy
+// Fresh nonce per request: only scripts Next renders with it can run.
+// https://nextjs.org/docs/app/guides/content-security-policy
 export function proxy(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const isDev = process.env.NODE_ENV === "development";
 
   const csp = [
     `default-src 'self'`,
-    // React needs eval in dev for its error overlay; never in production.
+    // Dev overlay needs eval; never allowed in production.
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ""}`,
     `style-src 'self' ${isDev ? "'unsafe-inline'" : `'nonce-${nonce}'`}`,
     `img-src 'self' blob: data:`,
@@ -19,7 +18,7 @@ export function proxy(request: NextRequest) {
     `base-uri 'self'`,
     `form-action 'self'`,
     `frame-ancestors 'none'`,
-    // Safari upgrades http://localhost too, which breaks the dev server.
+    // Off in dev: Safari would upgrade http://localhost and break it.
     ...(isDev ? [] : [`upgrade-insecure-requests`]),
   ].join("; ");
 

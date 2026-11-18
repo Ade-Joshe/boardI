@@ -11,8 +11,8 @@ export default defineConfig([
       "no-implied-eval": "error",
       "no-new-func": "error",
       "no-script-url": "error",
-      // Raw HTML injection bypasses React's escaping. If you really need it,
-      // sanitise first and disable this per line with a justification.
+      // Raw HTML skips React's escaping. If unavoidable: sanitise,
+      // then disable per line with a reason.
       "react/no-danger": "error",
       "react/jsx-no-target-blank": ["error", { allowReferrer: false }],
     },
