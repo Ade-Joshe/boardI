@@ -8,8 +8,8 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "build": "next build && node scripts/copy-standalone-assets.mjs",
+    "start": "node .next/standalone/server.js",
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
     "audit": "pnpm audit --prod --audit-level=high",

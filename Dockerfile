@@ -25,11 +25,9 @@ ENV NODE_ENV=production \
     HOSTNAME=0.0.0.0 \
     PORT=3000
 
-# App files are root-owned (read-only to the app).
-# Only the Next.js cache is writable.
+# App files are root-owned and read-only; only .next/cache is writable.
+# `pnpm build` already copied .next/static and public/ in.
 COPY --from=build /app/.next/standalone ./
-COPY --from=build /app/.next/static ./.next/static
-COPY --from=build /app/public ./public
 COPY --from=build --chown=nonroot:nonroot /app/.next/standalone/.next/cache ./.next/cache
 
 USER nonroot
