@@ -10,7 +10,8 @@
       "Read(./**/*.key)",
       "Read(~/.ssh/**)",
       "Read(~/.claude/.credentials.json)",
-      "Read(~/.claude.json)"
+      "Read(~/.claude.json)",
+      "mcp__playwright__browser_run_code_unsafe"
     ],
     "ask": [
       "Bash(git push:*)",
@@ -38,7 +39,8 @@
       "Edit(./.husky/**)",
       "Edit(./docs/standards/**)",
       "Edit(./docs/security-model.md)",
-      "Edit(./SECURITY.md)"
+      "Edit(./SECURITY.md)",
+      "Edit(./.mcp.json)"
     ]
   }
 }
